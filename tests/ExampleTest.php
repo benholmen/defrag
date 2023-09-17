@@ -1,6 +1,6 @@
 <?php
 
-namespace VendorName\Skeleton\Tests;
+namespace BenHolmen\Defrag\Tests;
 
 use PHPUnit\Framework\TestCase;
 
