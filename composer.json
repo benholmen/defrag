@@ -1,9 +1,10 @@
 {
     "name": "benholmen/defrag",
-    "description": "Defragment your PHPUnit tests",
+    "description": "MS-DOS defrag output for your PHPUnit test suite",
     "keywords": [
-        "benholmen",
-        "defrag"
+        "defrag",
+        "phpunit",
+        "testing"
     ],
     "homepage": "https://github.com/benholmen/defrag",
     "license": "MIT",
@@ -37,7 +38,7 @@
     },
     "scripts": {
         "test": "vendor/bin/phpunit",
-            "test-coverage": "vendor/bin/phpunit --coverage",
+        "test-coverage": "vendor/bin/phpunit --coverage",
         "format": "vendor/bin/pint"
     },
     "config": {
