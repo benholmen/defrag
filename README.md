@@ -1,56 +1,48 @@
 # Defragment your PHPUnit tests
+This package generates a satisfying Defrag-style output when running your [PHPUnit test suite](https://phpunit.de).
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/benholmen/defrag.svg?style=flat-square)](https://packagist.org/packages/benholmen/defrag)
-[![Tests](https://img.shields.io/github/actions/workflow/status/benholmen/defrag/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/benholmen/defrag/actions/workflows/run-tests.yml)
-[![Total Downloads](https://img.shields.io/packagist/dt/benholmen/defrag.svg?style=flat-square)](https://packagist.org/packages/benholmen/defrag)
+## Inspired by
+MS-DOS 6.x included a [defrag utility](https://en.wikipedia.org/wiki/List_of_DOS_commands#DEFRAG) that honestly was just so satisfying to watch. The 90s were a different time, folks. Disk defragmentation took about an hour and physically rearranged the data on your hard drive so it was more efficient to read off the disk.
 
-This is where your description should go. Try and limit it to a paragraph or two. Consider adding a small example.
-
-## Support us
-
-[<img src="https://github-ads.s3.eu-central-1.amazonaws.com/defrag.jpg?t=1" width="419px" />](https://spatie.be/github-ad-click/defrag)
-
-We invest a lot of resources into creating [best in class open source packages](https://spatie.be/open-source). You can support us by [buying one of our paid products](https://spatie.be/open-source/support-us).
-
-We highly appreciate you sending us a postcard from your hometown, mentioning which of our package(s) you are using. You'll find our address on [our contact page](https://spatie.be/about-us). We publish all received postcards on [our virtual postcard wall](https://spatie.be/open-source/postcards).
+#### Defrag Running in MS-DOS 6.22
+[![Defrag Running in MS-DOS 6.22](https://img.youtube.com/vi/Nidwz3BzFCM/0.jpg)](https://www.youtube.com/watch?v=Nidwz3BzFCM "Defrag Running in MS-DOS 6.22")
 
 ## Installation
 
-You can install the package via composer:
+Install the package via composer:
 
 ```bash
 composer require benholmen/defrag
 ```
 
-## Usage
+Add the following lines to your `phpunit.xml` file:
+```xml
+<extensions>
+    <bootstrap class="BenHolmen\Defrag\Extension"/>
+</extensions>
+```
 
-```php
-$skeleton = new BenHolmen\Defrag();
-echo $skeleton->echoPhrase('Hello, BenHolmen!');
+## Usage
+Run PHPUnit as usual:
+
+```bash
+vendor/bin/phpunit
 ```
 
 ## Testing
-
+Of course, this produces the defrag output you'd expect.
 ```bash
 composer test
 ```
-
-## Changelog
-
-Please see [CHANGELOG](CHANGELOG.md) for more information on what has changed recently.
 
 ## Contributing
 
 Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTING.md) for details.
 
-## Security Vulnerabilities
-
-Please review [our security policy](../../security/policy) on how to report security vulnerabilities.
-
 ## Credits
 
 - [Ben Holmen](https://github.com/benholmen)
-- [All Contributors](../../contributors)
+- [Jess Archer](https://github.com/jessarcher) key intel + assistance
 
 ## License
 
