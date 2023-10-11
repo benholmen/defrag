@@ -2,16 +2,16 @@
 
 namespace BenHolmen\Defrag;
 
+use BenHolmen\Defrag\Traits\WritesOutput;
 use Illuminate\Support\Collection;
 use Laravel\Prompts\Concerns\Colors;
 use Laravel\Prompts\Concerns\Cursor;
-use Laravel\Prompts\Output\ConsoleOutput;
-use Symfony\Component\Console\Terminal;
 
 class DefragPrinter
 {
     use Colors;
     use Cursor;
+    use WritesOutput;
 
     private int $testCount;
 
@@ -23,7 +23,7 @@ class DefragPrinter
 
     private Collection $disk;
 
-    private int $width;
+    private int $width = 85;
 
     private int $hddWidth;
 
@@ -54,7 +54,7 @@ class DefragPrinter
         );
     }
 
-    public function testRunnerFinished($event): void
+    public function testRunnerExecutionFinished($event): void
     {
         $this->completeTest();
 
@@ -67,7 +67,6 @@ class DefragPrinter
 
         $this->initHdd();
 
-        $this->width = min((new Terminal)->getWidth(), 85);
         $this->hddWidth = $this->width - 4;
         $this->boxWidth = floor($this->width / 2) - 4;
 
@@ -76,27 +75,9 @@ class DefragPrinter
             + 7 // status, legend
             + 1; // bottom
 
-        $this->writeAll(initialRender: true);
-    }
+        $this->writeAll();
 
-    private function initHdd(): void
-    {
-        $this->disk = collect()
-            ->pad($this->testCount - 1, Sector::PENDING)
-            ->pad(ceil($this->testCount / $this->percentDiskUsed), Sector::UNUSED)
-            ->shuffle()
-            ->prepend(Sector::UNMOVABLE);
-    }
-
-    private function diskFormatted(): Collection
-    {
-        return $this->disk
-            ->map(fn ($sector) => $sector->formatted());
-    }
-
-    private function bgBlock(int $n = 1): string
-    {
-        return str_repeat("\e{$this->defaultColors} \e[39;49m", $n);
+        $this->hideCursor();
     }
 
     private function completeTest($sector = Sector::PASSED): void
@@ -138,57 +119,62 @@ class DefragPrinter
         $this->writeAll();
     }
 
-    private function writeAll($initialRender = false): void
+    private function initHdd(): void
     {
-        if (! $initialRender) {
-            $this->moveCursor(0, -$this->totalHeight);
-        }
+        $this->disk = collect()
+            ->pad($this->testCount - 1, Sector::PENDING)
+            ->pad(ceil($this->testCount / $this->percentDiskUsed), Sector::UNUSED)
+            ->shuffle()
+            ->prepend(Sector::UNMOVABLE);
+    }
 
-        $this->writeDirectly(
-            "\e[48;5;15m\e[107m\e[1m  Optimize "
-            . str_repeat(' ', $this->width - 21)
-            . "F1=Help   \e[39;49m\e[22m\n"
-        );
-
-        $this->writeDirectly($this->bgBlock($this->width)."\n");
-
-        $this->writeHdd();
-
-        $this->writeDirectly($this->bgBlock($this->width)."\n");
-
-        $this->writeStatus();
-
+    private function writeAll(): void
+    {
         $action = $this->testCount === $this->testsCompleted
             ? 'Complete'
             : collect(['Reading...', 'Writing...', 'Updating FAT...'])->random();
 
-        $action = "{$this->testsCompleted} of {$this->testCount}";
+        $this->writeOutput(
+            "\e[48;5;15m\e[107m\e[1m  Optimize "
+            . str_repeat(' ', $this->width - 21)
+            . "F1=Help   \e[39;49m\e[22m"
+            . PHP_EOL
 
-        $this->writeDirectly(
-            "\e[107m\e[91m\e[1m  {$action}"
+            . $this->bgBlock($this->width) . PHP_EOL
+
+            . $this->hddOutput()
+
+            . $this->bgBlock($this->width) . PHP_EOL
+
+            . $this->statusOutput()
+
+            . "\e[107m\e[91m\e[1m  {$action}"
             . str_repeat(' ', 66 - strlen($action))
-            . "| PHPUnit Defrag \e[39;49m\e[22m\n"
+            . "| PHPUnit Defrag \e[39;49m\e[22m"
         );
-
-        $this->hideCursor();
     }
 
-    private function writeHdd(): void
+    private function bgBlock(int $n = 1): string
+    {
+        return str_repeat("\e{$this->defaultColors} \e[39;49m", $n);
+    }
+
+    private function hddOutput(): string
     {
         $gridWidth = $this->width - 4;
 
-        $this->diskFormatted()
+        return $this->disk
+            ->map(fn ($sector) => $sector->formatted())
             ->chunk($gridWidth)
-            ->each(fn ($row) => $this->writeDirectly(
-                $this->bgBlock(2)
+            ->map(fn ($row) => $this->bgBlock(2)
                 . $row->implode('')
                 . $this->bgBlock(2 + $gridWidth - $row->count())
-                . "\n"
+                . PHP_EOL
             )
-            );
+            ->implode('');
     }
 
-    private function writeStatus(): void
+    private function statusOutput(): string
     {
         $cluster = $this->italic(
             str_pad(
@@ -215,6 +201,12 @@ class DefragPrinter
         $progressBar = str_repeat('█', (int) ceil($this->testsCompleted / $this->testCount * $progressBarWidth))
             . str_repeat('░', floor(($this->testCount - $this->testsCompleted) / $this->testCount * $progressBarWidth));
 
+        $blockRatio = str_pad(
+            "1 block = 1 test",
+            29,
+            ' ',
+        );
+
         $used = (Sector::USED)->formatted();
         $unused = (Sector::UNUSED)->formatted();
         $reading = (Sector::READING)->formatted();
@@ -222,14 +214,18 @@ class DefragPrinter
         $bad = (Sector::BAD)->formatted();
         $unmovable = (Sector::UNMOVABLE)->formatted();
 
-        $this->writeDirectly(
-            "{$this->defaultColors}┌──────────────── \e[33mStatus\e[97m ────────────────┐ {$this->defaultColors}┌──────────────── \e[33mLegend\e[97m ────────────────┐\e[39;49m
-{$this->defaultColors}│ Cluster {$cluster}                    {$percent}% │ │ {$used}{$this->defaultColors} - Used           {$unused}{$this->defaultColors} - Unused          │\e[39;49m
-{$this->defaultColors}│ {$progressBar} │ │ {$reading}{$this->defaultColors} - Reading        {$writing}{$this->defaultColors} - Writing         │\e[39;49m
-{$this->defaultColors}│ {$elapsedTime} │ │ {$bad}{$this->defaultColors} - Bad            {$unmovable}{$this->defaultColors} - Unmovable       │\e[39;49m
-{$this->defaultColors}│            Full Optimization           │ │ Drive C: 1 block = 11 clusters         │\e[39;49m
-{$this->defaultColors}└────────────────────────────────────────┘ └────────────────────────────────────────┘\e[39;49m\n"
-        );
+        return
+              "{$this->defaultColors}┌──────────────── \e[33mStatus\e[97m ────────────────┐ "
+            . "{$this->defaultColors}┌──────────────── \e[33mLegend\e[97m ────────────────┐\e[39;49m" . PHP_EOL
+            . "{$this->defaultColors}│ Cluster {$cluster}                    {$percent}% │ "
+            . "│ {$used}{$this->defaultColors} - Used           {$unused}{$this->defaultColors} - Unused          │\e[39;49m" . PHP_EOL
+            . "{$this->defaultColors}│ {$progressBar} │ "
+            . "│ {$reading}{$this->defaultColors} - Reading        {$writing}{$this->defaultColors} - Writing         │\e[39;49m" . PHP_EOL
+            . "{$this->defaultColors}│ {$elapsedTime} │ "
+            . "│ {$bad}{$this->defaultColors} - Bad            {$unmovable}{$this->defaultColors} - Unmovable       │\e[39;49m" . PHP_EOL
+            . "{$this->defaultColors}│            Full Optimization           │ "
+            . "│ Drive C: {$blockRatio} │\e[39;49m" . PHP_EOL
+            . "{$this->defaultColors}└────────────────────────────────────────┘ └────────────────────────────────────────┘\e[39;49m" . PHP_EOL;
     }
 
     private function elapsedTimeFormatted(): string
@@ -245,13 +241,6 @@ class DefragPrinter
 
     private function shutdown(): void
     {
-        $this->writeDirectly("\n");
-
         $this->showCursor();
-    }
-
-    protected static function writeDirectly(string $message): void
-    {
-        (new ConsoleOutput)->writeDirectly($message, false);
     }
 }

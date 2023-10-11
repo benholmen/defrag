@@ -8,7 +8,7 @@ use BenHolmen\Defrag\Subscribers\TestErrored;
 use BenHolmen\Defrag\Subscribers\TestFailed;
 use BenHolmen\Defrag\Subscribers\TestMarkedIncomplete;
 use BenHolmen\Defrag\Subscribers\TestPassed;
-use BenHolmen\Defrag\Subscribers\TestRunnerFinished;
+use BenHolmen\Defrag\Subscribers\TestRunnerExecutionFinished;
 use BenHolmen\Defrag\Subscribers\TestSkipped;
 use BenHolmen\Defrag\Subscribers\TestSuiteExecutionStarted;
 use PHPUnit\Runner\Extension\Extension as PHPUnitExtension;
@@ -34,7 +34,7 @@ class Extension implements PHPUnitExtension
 
         $facade->registerSubscribers(
             new TestSuiteExecutionStarted($defragPrinter),
-            new TestRunnerFinished($defragPrinter),
+            new TestRunnerExecutionFinished($defragPrinter),
             new TestErrored($defragPrinter),
             new TestFailed($defragPrinter),
             new TestPassed($defragPrinter),
