@@ -202,7 +202,7 @@ class DefragPrinter
             . str_repeat('░', floor(($this->testCount - $this->testsCompleted) / $this->testCount * $progressBarWidth));
 
         $blockRatio = str_pad(
-            "1 block = 1 test",
+            '1 block = 1 test',
             29,
             ' ',
         );
