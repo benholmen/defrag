@@ -191,15 +191,14 @@ class DefragPrinter
         );
 
         $percent = str_pad(
-            floor($this->testsCompleted / $this->testCount * 100),
+            (int) floor($this->testsCompleted / $this->testCount * 100),
             3,
             ' ',
             STR_PAD_LEFT
         );
 
-        $progressBarWidth = $this->boxWidth;
-        $progressBar = str_repeat('█', (int) ceil($this->testsCompleted / $this->testCount * $progressBarWidth))
-            . str_repeat('░', floor(($this->testCount - $this->testsCompleted) / $this->testCount * $progressBarWidth));
+        $progressBarFilledWidth = (int) min($this->boxWidth, ceil($this->testsCompleted / $this->testCount * $this->boxWidth));
+        $progressBar = str_repeat('█', $progressBarFilledWidth) . str_repeat('░', $this->boxWidth - $progressBarFilledWidth);
 
         $blockRatio = str_pad(
             '1 block = 1 test',
