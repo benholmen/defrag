@@ -103,12 +103,12 @@ class DefragPrinter
             );
 
             // find the first unused sector and set it to writing
-            // $unusedIndex = $this->disk->search(Sector::UNUSED);
             $unusedIndex = $this->disk
                 ->filter(fn ($sector) => $sector === Sector::UNUSED)
                 ->keys()
-                ->filter(fn ($index) => $index < $this->testCount)
-                ->random();
+                ->shuffle()
+                ->sort(fn ($index) => $index > $this->testCount)
+                ->first();
             $this->disk->put($unusedIndex, Sector::WRITING);
         }
 
