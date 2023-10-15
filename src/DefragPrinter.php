@@ -56,8 +56,6 @@ class DefragPrinter
 
     public function testRunnerExecutionFinished($event): void
     {
-        $this->completeTest();
-
         $this->shutdown();
     }
 
