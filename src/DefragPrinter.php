@@ -48,8 +48,8 @@ class DefragPrinter
                 \PHPUnit\Event\Test\Passed::class => Sector::PASSED,
                 \PHPUnit\Event\Test\Errored::class => Sector::ERROR,
                 \PHPUnit\Event\Test\Failed::class => Sector::FAILED,
-                \PHPUnit\Event\Test\MarkedIncomplete::class => Sector::FAILED,
-                \PHPUnit\Event\Test\Skipped::class => Sector::FAILED,
+                \PHPUnit\Event\Test\MarkedIncomplete::class => Sector::INCOMPLETE,
+                \PHPUnit\Event\Test\Skipped::class => Sector::SKIPPED,
             }
         );
     }
@@ -207,22 +207,22 @@ class DefragPrinter
             ' ',
         );
 
-        $used = (Sector::USED)->formatted();
-        $unused = (Sector::UNUSED)->formatted();
+        $passed = (Sector::PASSED)->formatted();
+        $failed = (Sector::FAILED)->formatted();
         $reading = (Sector::READING)->formatted();
         $writing = (Sector::WRITING)->formatted();
-        $bad = (Sector::BAD)->formatted();
+        $skipped = (Sector::SKIPPED)->formatted();
         $unmovable = (Sector::UNMOVABLE)->formatted();
 
         return
               "{$this->defaultColors}┌──────────────── \e[33mStatus\e[97m ────────────────┐ "
             . "{$this->defaultColors}┌──────────────── \e[33mLegend\e[97m ────────────────┐\e[39;49m" . PHP_EOL
             . "{$this->defaultColors}│ Cluster {$cluster}                    {$percent}% │ "
-            . "│ {$used}{$this->defaultColors} - Used           {$unused}{$this->defaultColors} - Unused          │\e[39;49m" . PHP_EOL
+            . "│ {$passed}{$this->defaultColors} - Passed         {$failed}{$this->defaultColors} - Failed          │\e[39;49m" . PHP_EOL
             . "{$this->defaultColors}│ {$progressBar} │ "
             . "│ {$reading}{$this->defaultColors} - Reading        {$writing}{$this->defaultColors} - Writing         │\e[39;49m" . PHP_EOL
             . "{$this->defaultColors}│ {$elapsedTime} │ "
-            . "│ {$bad}{$this->defaultColors} - Bad            {$unmovable}{$this->defaultColors} - Unmovable       │\e[39;49m" . PHP_EOL
+            . "│ {$skipped}{$this->defaultColors} - Skipped        {$unmovable}{$this->defaultColors} - Unmovable       │\e[39;49m" . PHP_EOL
             . "{$this->defaultColors}│            Full Optimization           │ "
             . "│ Drive C: {$blockRatio} │\e[39;49m" . PHP_EOL
             . "{$this->defaultColors}└────────────────────────────────────────┘ └────────────────────────────────────────┘\e[39;49m" . PHP_EOL;
