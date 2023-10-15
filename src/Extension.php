@@ -26,6 +26,8 @@ class Extension implements PHPUnitExtension
         if (
             $configuration->noOutput()
             || $configuration->noProgress()
+            || $configuration->outputIsTeamCity()
+            || $configuration->outputIsTestDox()
         ) {
             return;
         }
