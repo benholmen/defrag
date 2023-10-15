@@ -19,11 +19,11 @@ class DefragPrinter
 
     private float $startTime;
 
-    private float $percentDiskUsed = 42 / 100;
-
     private Collection $disk;
 
     private int $width = 85;
+
+    private int $sectorCount = 932;
 
     private int $hddWidth;
 
@@ -123,7 +123,7 @@ class DefragPrinter
     {
         $this->disk = collect()
             ->pad($this->testCount - 1, Sector::PENDING)
-            ->pad(ceil($this->testCount / $this->percentDiskUsed), Sector::UNUSED)
+            ->pad($this->sectorCount, Sector::UNUSED)
             ->shuffle()
             ->prepend(Sector::UNMOVABLE);
     }
