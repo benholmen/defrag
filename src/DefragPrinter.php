@@ -154,7 +154,9 @@ class DefragPrinter
 
     private function bgBlock(int $n = 1): string
     {
-        return str_repeat("\e{$this->defaultColors} \e[39;49m", $n);
+        return "\e{$this->defaultColors}"
+            . str_repeat(' ', $n)
+            . "\e[39;49m";
     }
 
     private function hddOutput(): string
