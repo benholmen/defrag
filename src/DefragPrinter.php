@@ -120,7 +120,10 @@ class DefragPrinter
     private function initHdd(): void
     {
         $this->disk = collect()
-            ->pad($this->testCount - 1, Sector::PENDING)
+            ->pad($this->testCount - 2, Sector::PENDING)
+            ->pad($this->testCount + 10, Sector::UNUSED)
+            ->add(Sector::WRITING)
+            ->add(Sector::READING)
             ->pad($this->sectorCount, Sector::UNUSED)
             ->shuffle()
             ->prepend(Sector::UNMOVABLE);
