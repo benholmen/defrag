@@ -133,7 +133,7 @@ class DefragPrinter
             : collect(['Reading...', 'Writing...', 'Updating FAT...'])->random();
 
         $this->writeOutput(
-            "\e[48;5;15m\e[107m\e[1m  Optimize "
+            "\e[107m\e[30m\e[107m\e[1m  Optimize "
             . str_repeat(' ', $this->width - 21)
             . "F1=Help   \e[39;49m\e[22m"
             . PHP_EOL
