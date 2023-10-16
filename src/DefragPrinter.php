@@ -161,14 +161,12 @@ class DefragPrinter
 
     private function hddOutput(): string
     {
-        $gridWidth = $this->width - 4;
-
         return $this->disk
             ->map(fn ($sector) => $sector->formatted())
-            ->chunk($gridWidth)
+            ->chunk($this->hddWidth)
             ->map(fn ($row) => $this->bgBlock(2)
                 . $row->implode('')
-                . $this->bgBlock(2 + $gridWidth - $row->count())
+                . $this->bgBlock(2 + $this->hddWidth - $row->count())
                 . PHP_EOL
             )
             ->implode('');
