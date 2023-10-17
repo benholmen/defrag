@@ -73,9 +73,9 @@ class DefragPrinter
             + 7 // status, legend
             + 1; // bottom
 
-        $this->writeAll();
-
         $this->hideCursor();
+
+        $this->writeAll();
     }
 
     private function completeTest($sector = Sector::PASSED): void

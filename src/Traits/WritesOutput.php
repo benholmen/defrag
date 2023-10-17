@@ -13,6 +13,8 @@ trait WritesOutput
 
     private function writeOutput($output): void
     {
+        $this->hideCursor();
+
         $lines = explode(PHP_EOL, $output);
 
         if ($this->lastOutput) {
@@ -30,6 +32,8 @@ trait WritesOutput
         $this->lastOutput = $lines;
 
         $this->moveCursor(0, count($lines) - $lastIndex - 1);
+
+        $this->showCursor();
     }
 
     protected static function writeDirectly(string $message): void
