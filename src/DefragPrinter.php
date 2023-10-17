@@ -91,6 +91,8 @@ class DefragPrinter
         ) {
             $this->testsCompleted++;
 
+            $this->writeAll();
+
             return;
         }
 
