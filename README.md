@@ -12,7 +12,7 @@ MS-DOS 6.x included a [defrag utility](https://en.wikipedia.org/wiki/List_of_DOS
 Install the package via composer:
 
 ```bash
-composer require benholmen/defrag
+composer require benholmen/defrag --dev
 ```
 
 Add the following lines to your `phpunit.xml` file:
@@ -42,7 +42,7 @@ Please see [CONTRIBUTING](https://github.com/spatie/.github/blob/main/CONTRIBUTI
 ## Credits
 
 - [Ben Holmen](https://github.com/benholmen)
-- [Jess Archer](https://github.com/jessarcher) key intel + assistance
+- [Jess Archer](https://github.com/jessarcher) key intel, assistance, and the fantastic [laravel/prompts](https://github.com/laravel/prompts) package
 
 ## License
 
