@@ -2,6 +2,10 @@
 
 All notable changes to `defrag` will be documented in this file.
 
+## 0.1.4 - 2023-10-17
+
+This release fixes a background formatting issue and increases the frequency of updates on large test suites.
+
 ## 0.1.3 - 2023-10-17
 
 This release adds support for large test suites and cleans up some formatting.
