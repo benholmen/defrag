@@ -17,6 +17,8 @@ class DefragPrinter
 
     private int $testsCompleted = 0;
 
+    private int $sectorRatio;
+
     private float $startTime;
 
     private Collection $disk;
@@ -36,8 +38,7 @@ class DefragPrinter
     public function testSuiteExecutionStarted($event): void
     {
         if (empty($this->testCount)) {
-            $this->testCount = $event->testSuite()->count();
-            $this->init();
+            $this->init($event->testSuite()->count());
         }
     }
 
@@ -59,9 +60,12 @@ class DefragPrinter
         $this->shutdown();
     }
 
-    private function init(): void
+    private function init(int $testCount): void
     {
         $this->startTime = microtime(true);
+
+        $this->testCount = $testCount;
+        $this->sectorRatio = ceil($this->testCount / $this->sectorCount);
 
         $this->initHdd();
 
@@ -80,6 +84,16 @@ class DefragPrinter
 
     private function completeTest($sector = Sector::PASSED): void
     {
+        if (
+            $sector === Sector::PASSED
+            && $this->testsCompleted < $this->testCount
+            && $this->testsCompleted % $this->sectorRatio
+        ) {
+            $this->testsCompleted++;
+
+            return;
+        }
+
         // find the reading block and set it to unused status
         $readingIndex = $this->disk->search(Sector::READING);
         if ($readingIndex !== false) {
@@ -98,18 +112,19 @@ class DefragPrinter
                 $this->disk
                     ->filter(fn ($sector) => $sector === Sector::PENDING)
                     ->keys()
-                    ->random(),
+                    ->shuffle()
+                    ->first(),
                 Sector::READING
             );
 
             // find the first unused sector and set it to writing
-            $unusedIndex = $this->disk
-                ->filter(fn ($sector) => $sector === Sector::UNUSED)
-                ->keys()
-                ->shuffle()
-                ->sort(fn ($index) => $index > $this->testCount)
-                ->first();
-            $this->disk->put($unusedIndex, Sector::WRITING);
+            $this->disk->put(
+                $this->disk
+                    ->filter(fn ($sector) => $sector === Sector::UNUSED)
+                    ->keys()
+                    ->first(),
+                Sector::WRITING
+            );
         }
 
         $this->testsCompleted++;
@@ -120,8 +135,7 @@ class DefragPrinter
     private function initHdd(): void
     {
         $this->disk = collect()
-            ->pad($this->testCount - 2, Sector::PENDING)
-            ->pad($this->testCount + 10, Sector::UNUSED)
+            ->pad((int) ceil($this->testCount / $this->sectorRatio) - 2, Sector::PENDING)
             ->add(Sector::WRITING)
             ->add(Sector::READING)
             ->pad($this->sectorCount, Sector::UNUSED)
@@ -201,8 +215,8 @@ class DefragPrinter
         $progressBarFilledWidth = (int) min($this->boxWidth, ceil($this->testsCompleted / $this->testCount * $this->boxWidth));
         $progressBar = str_repeat('█', $progressBarFilledWidth) . str_repeat('░', $this->boxWidth - $progressBarFilledWidth);
 
-        $blockRatio = str_pad(
-            '1 block = 1 test',
+        $sectorRatio = str_pad(
+            '1 block = ' . $this->sectorRatio . ($this->sectorRatio === 1 ? ' test' : ' tests'),
             29,
             ' ',
         );
@@ -224,7 +238,7 @@ class DefragPrinter
             . "{$this->defaultColors}│ {$elapsedTime} │ "
             . "│ {$skipped}{$this->defaultColors} - Skipped        {$unmovable}{$this->defaultColors} - Unmovable       │\e[39;49m" . PHP_EOL
             . "{$this->defaultColors}│            Full Optimization           │ "
-            . "│ Drive C: {$blockRatio} │\e[39;49m" . PHP_EOL
+            . "│ Drive C: {$sectorRatio} │\e[39;49m" . PHP_EOL
             . "{$this->defaultColors}└────────────────────────────────────────┘ └────────────────────────────────────────┘\e[39;49m" . PHP_EOL;
     }
 
