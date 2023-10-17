@@ -230,16 +230,16 @@ class DefragPrinter
 
         return
               "{$this->defaultColors}┌──────────────── Status ────────────────┐ "
-            . "{$this->defaultColors}┌──────────────── Legend ────────────────┐" . PHP_EOL
+            . "{$this->defaultColors}┌──────────────── Legend ────────────────┐\e[49m" . PHP_EOL
             . "{$this->defaultColors}│ Cluster {$cluster}                    {$percent}% │ "
-            . "│ {$passed}{$this->defaultColors} - Passed         {$failed}{$this->defaultColors} - Failed          │" . PHP_EOL
+            . "│ {$passed}{$this->defaultColors} - Passed         {$failed}{$this->defaultColors} - Failed          │\e[49m" . PHP_EOL
             . "{$this->defaultColors}│ {$progressBar} │ "
-            . "│ {$reading}{$this->defaultColors} - Reading        {$writing}{$this->defaultColors} - Writing         │" . PHP_EOL
+            . "│ {$reading}{$this->defaultColors} - Reading        {$writing}{$this->defaultColors} - Writing         │\e[49m" . PHP_EOL
             . "{$this->defaultColors}│ {$elapsedTime} │ "
-            . "│ {$skipped}{$this->defaultColors} - Skipped        {$unmovable}{$this->defaultColors} - Unmovable       │" . PHP_EOL
+            . "│ {$skipped}{$this->defaultColors} - Skipped        {$unmovable}{$this->defaultColors} - Unmovable       │\e[49m" . PHP_EOL
             . "{$this->defaultColors}│            Full Optimization           │ "
-            . "│ Drive C: {$sectorRatio} │" . PHP_EOL
-            . "{$this->defaultColors}└────────────────────────────────────────┘ └────────────────────────────────────────┘" . PHP_EOL;
+            . "│ Drive C: {$sectorRatio} │\e[49m" . PHP_EOL
+            . "{$this->defaultColors}└────────────────────────────────────────┘ └────────────────────────────────────────┘\e[39;49m" . PHP_EOL;
     }
 
     private function elapsedTimeFormatted(): string
