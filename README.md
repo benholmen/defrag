@@ -1,6 +1,8 @@
 # Defragment your PHPUnit tests
 This package generates a satisfying Defrag-style output when running your [PHPUnit test suite](https://phpunit.de).
 
+![Sample output](output.gif)
+
 ## Inspired by
 MS-DOS 6.x included a [defrag utility](https://en.wikipedia.org/wiki/List_of_DOS_commands#DEFRAG) that honestly was just so satisfying to watch. The 90s were a different time, folks. Disk defragmentation took about an hour and physically rearranged the data on your hard drive so it was more efficient to read off the disk.
 
