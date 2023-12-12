@@ -2,6 +2,10 @@
 
 All notable changes to `defrag` will be documented in this file.
 
+## 0.1.5 - 2023-12-12
+
+This PR moves some dev dependencies to full dependencies. This will cause composer to throw an error when requiring `benholmen/defrag` on a project with PHPUnit < v10.
+
 ## 0.1.4 - 2023-10-17
 
 This release fixes a background formatting issue and increases the frequency of updates on large test suites.
